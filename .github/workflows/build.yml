@@ -1,0 +1,29 @@
+name: build-zerotier-aarch64
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build static zerotier-one (aarch64 musl)
+        run: |
+          set -e
+          wget -q https://musl.cc/aarch64-linux-musl-cross.tgz
+          tar xzf aarch64-linux-musl-cross.tgz
+          export PATH="$PWD/aarch64-linux-musl-cross/bin:$PATH"
+          git clone --depth 1 --branch 1.16.2 https://github.com/zerotier/ZeroTierOne.git
+          cd ZeroTierOne
+          make static CC=aarch64-linux-musl-gcc CXX=aarch64-linux-musl-g++ STRIP=aarch64-linux-musl-strip -j2
+          file zerotier-one
+          mkdir -p ../out
+          cp zerotier-one ../out/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zerotier-one-aarch64
+          path: out/
+          retention-days: 7
