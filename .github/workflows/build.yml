@@ -12,10 +12,12 @@ jobs:
         run: |
           docker run --rm -v "$PWD":/build -w /build alpine:3.21 sh -c "
             set -euo pipefail
-            apk add --no-cache build-base linux-headers git rust cargo
+            apk add --no-cache build-base linux-headers git curl
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+            export PATH=/root/.cargo/bin:\$PATH
             git clone --depth 1 --branch 1.16.2 --recurse-submodules https://github.com/zerotier/ZeroTierOne.git
             cd ZeroTierOne
-            make ZT_STATIC=1 -j$(nproc) 2>&1 | tee build.log
+            make ZT_STATIC=1 -j\$(nproc) 2>&1 | tee build.log
             file zerotier-one zerotier-cli zerotier-idtool
           "
           mkdir -p out
