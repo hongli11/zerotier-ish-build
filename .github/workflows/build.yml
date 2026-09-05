@@ -12,7 +12,7 @@ jobs:
         run: |
           docker run --rm -v "$PWD":/build -w /build alpine:3.21 sh -c "
             set -euo pipefail
-            apk add --no-cache build-base linux-headers git
+            apk add --no-cache build-base linux-headers git rust cargo
             git clone --depth 1 --branch 1.16.2 --recurse-submodules https://github.com/zerotier/ZeroTierOne.git
             cd ZeroTierOne
             make ZT_STATIC=1 -j$(nproc) 2>&1 | tee build.log
