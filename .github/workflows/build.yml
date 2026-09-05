@@ -13,13 +13,13 @@ jobs:
           docker run --rm -v "$PWD":/build -w /build alpine:3.21 sh -c "
             set -euo pipefail
             apk add --no-cache build-base linux-headers git
-            git clone --depth 1 --branch 1.16.2 https://github.com/zerotier/ZeroTierOne.git
+            git clone --depth 1 --branch 1.16.2 --recurse-submodules https://github.com/zerotier/ZeroTierOne.git
             cd ZeroTierOne
-            make static -j\$(nproc) 2>&1 | tee build.log
-            file zerotier-one
+            make ZT_STATIC=1 -j$(nproc) 2>&1 | tee build.log
+            file zerotier-one zerotier-cli zerotier-idtool
           "
           mkdir -p out
-          cp ZeroTierOne/zerotier-one out/
+          cp ZeroTierOne/zerotier-one ZeroTierOne/zerotier-cli ZeroTierOne/zerotier-idtool out/
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
