@@ -8,18 +8,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Build static zerotier-one (aarch64 musl via qemu)
+      - name: Build static zerotier-one (aarch64 musl)
         run: |
-          docker run --rm --platform linux/arm64/v8 -v "$PWD":/build -w /build alpine:3.21 sh -c "
-            set -e
-            apk add --no-cache build-base linux-headers git
-            git clone --depth 1 --branch 1.16.2 https://github.com/zerotier/ZeroTierOne.git
-            cd ZeroTierOne
-            make static -j2 2>&1 | tee build.log
-            ls -la zerotier-one
-          "
-          mkdir -p out
-          cp ZeroTierOne/zerotier-one out/
+          set -euo pipefail
+          wget -t 3 https://musl.cc/aarch64-linux-musl-cross.tgz
+          tar xzf aarch64-linux-musl-cross.tgz
+          export PATH="$PWD/aarch64-linux-musl-cross/bin:$PATH"
+          git clone --depth 1 --branch 1.16.2 https://github.com/zerotier/ZeroTierOne.git
+          cd ZeroTierOne
+          make static CC=aarch64-linux-musl-gcc CXX=aarch64-linux-musl-g++ STRIP=aarch64-linux-musl-strip -j$(nproc) 2>&1 | tee build.log
+          file zerotier-one
+          mkdir -p ../out
+          cp zerotier-one ../out/
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
