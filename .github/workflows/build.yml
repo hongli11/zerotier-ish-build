@@ -30,7 +30,6 @@ jobs:
           ref: 1.16.2
           submodules: recursive
           path: ZeroTierOne
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build zerotier-one static aarch64
         run: |
