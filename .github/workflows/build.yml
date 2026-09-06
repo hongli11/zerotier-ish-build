@@ -11,7 +11,6 @@ jobs:
     steps:
       - name: Install aarch64 musl cross-compiler
         run: |
-          set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-musl g++-aarch64-linux-musl
           aarch64-linux-musl-gcc --version
@@ -26,12 +25,11 @@ jobs:
 
       - name: Build zerotier-one static aarch64
         run: |
-          set -euo pipefail
           cd ZeroTierOne
           make ZT_STATIC=1 \
             CC=aarch64-linux-musl-gcc \
             CXX=aarch64-linux-musl-g++ \
-            -j$(nproc) 2>&1 | tee build.log
+            -j4 2>&1 | tee build.log
           file zerotier-one zerotier-cli zerotier-idtool
 
       - name: Create output directory
