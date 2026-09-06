@@ -14,7 +14,7 @@ jobs:
           curl -fsSL "https://github.com/zerotier/ZeroTierOne/archive/refs/tags/1.16.2.tar.gz" -o zerotier.tar.gz
           tar xzf zerotier.tar.gz
           mv ZeroTierOne-1.16.2 ZeroTierOne
-          cd ZeroTierOne && git submodule update --init --recursive
+          cd ZeroTierOne && git init && git submodule update --init --recursive || true
 
       - name: Build in Alpine aarch64 container
         run: |
