@@ -36,7 +36,6 @@ jobs:
 
       - name: Copy artifacts
         run: |
-          cp ZeroTierOne/zerotier-one Zerotierr-one ZeroTierOne/zerotier-cli ZeroTierOne/zerotier-idtool out/ 2>/dev/null || \
           cp ZeroTierOne/zerotier-one ZeroTierOne/zerotier-cli ZeroTierOne/zerotier-idtool out/
 
       - name: Upload artifact
