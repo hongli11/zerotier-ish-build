@@ -15,13 +15,12 @@ jobs:
           sudo apt-get install -y gcc-aarch64-linux-musl g++-aarch64-linux-musl
           aarch64-linux-musl-gcc --version
 
-      - name: Checkout ZeroTier One
-        uses: actions/checkout@v4
-        with:
-          repository: zerotier/ZeroTierOne
-          ref: 1.16.2
-          submodules: recursive
-          path: ZeroTierOne
+      - name: Download ZeroTier One source
+        run: |
+          curl -fsSL "https://github.com/zerotier/ZeroTierOne/archive/refs/tags/1.16.2.tar.gz" -o zerotier.tar.gz
+          tar xzf zerotier.tar.gz
+          mv ZeroTierOne-1.16.2 ZeroTierOne
+          cd ZeroTierOne && git submodule update --init --recursive
 
       - name: Build zerotier-one static aarch64
         run: |
