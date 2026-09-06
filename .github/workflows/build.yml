@@ -27,7 +27,9 @@ jobs:
         run: |
           set -euo pipefail
           cd ZeroTierOne
-          make ZT_STATIC=1 CC=aarch64-linux-musl-gcc HOSTOS=Linux HOSTCPU=aarch64 \
+          make ZT_STATIC=1 \
+            CC=aarch64-linux-musl-gcc \
+            CXX=aarch64-linux-musl-g++ \
             -j$(nproc) 2>&1 | tee build.log
           file zerotier-one zerotier-cli zerotier-idtool
 
