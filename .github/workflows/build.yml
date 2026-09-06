@@ -9,12 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Install aarch64 musl cross-compiler
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-aarch64-linux-musl g++-aarch64-linux-musl
-          aarch64-linux-musl-gcc --version
-
       - name: Download ZeroTier One source
         run: |
           curl -fsSL "https://github.com/zerotier/ZeroTierOne/archive/refs/tags/1.16.2.tar.gz" -o zerotier.tar.gz
@@ -22,20 +16,22 @@ jobs:
           mv ZeroTierOne-1.16.2 ZeroTierOne
           cd ZeroTierOne && git submodule update --init --recursive
 
-      - name: Build zerotier-one static aarch64
+      - name: Build in Alpine aarch64 container
         run: |
-          cd ZeroTierOne
-          make ZT_STATIC=1 \
-            CC=aarch64-linux-musl-gcc \
-            CXX=aarch64-linux-musl-g++ \
-            -j4 2>&1 | tee build.log
-          file zerotier-one zerotier-cli zerotier-idtool
+          docker run --rm \
+            -v "$PWD/ZeroTierOne:/src" \
+            -v "$PWD/out:/out" \
+            alpine:3.19 \
+            sh -c '
+              apk add --no-cache make gcc g++ musl-dev linux-headers git tar
+              cd /src
+              make ZT_STATIC=1 -j$(nproc)
+              cp zerotier-one zerotier-cli zerotier-idtool /out/
+            '
 
-      - name: Create output directory
-        run: mkdir -p out
-
-      - name: Copy artifacts
-        run: cp ZeroTierOne/zerotier-one ZeroTierOne/zerotier-cli ZeroTierOne/zerotier-idtool out/
+      - name: Verify artifacts
+        run: |
+          file out/zerotier-one out/zerotier-cli out/zerotier-idtool
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
