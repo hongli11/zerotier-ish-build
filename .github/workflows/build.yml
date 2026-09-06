@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Install aarch64 cross-compiler
+      - name: Install aarch64 musl cross-compiler
         run: |
           set -euo pipefail
           sudo apt-get update
@@ -35,8 +35,7 @@ jobs:
         run: mkdir -p out
 
       - name: Copy artifacts
-        run: |
-          cp ZeroTierOne/zerotier-one ZeroTierOne/zerotier-cli ZeroTierOne/zerotier-idtool out/
+        run: cp ZeroTierOne/zerotier-one ZeroTierOne/zerotier-cli ZeroTierOne/zerotier-idtool out/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
