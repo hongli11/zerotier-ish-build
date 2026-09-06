@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04-arm
     steps:
       - name: Download ZeroTier One source
         run: |
@@ -16,18 +16,15 @@ jobs:
           mv ZeroTierOne-1.16.2 ZeroTierOne
           cd ZeroTierOne && git init && git submodule update --init --recursive || true
 
-      - name: Build in Alpine aarch64 container
+      - name: Build
         run: |
-          docker run --rm \
-            -v "$PWD/ZeroTierOne:/src" \
-            -v "$PWD/out:/out" \
-            alpine:3.19 \
-            sh -c '
-              apk add --no-cache make gcc g++ musl-dev linux-headers git tar
-              cd /src
-              make ZT_STATIC=1 -j$(nproc)
-              cp zerotier-one zerotier-cli zerotier-idtool /out/
-            '
+          sudo apt-get update
+          sudo apt-get install -y make gcc g++ musl-tools git tar
+          cd ZeroTierOne
+          export PATH=/usr/lib/musl:$PATH
+          make ZT_STATIC=1 ZT_SSO_SUPPORTED=0 -j$(nproc)
+          mkdir -p ../out
+          cp zerotier-one zerotier-cli zerotier-idtool ../out/
 
       - name: Verify artifacts
         run: |
