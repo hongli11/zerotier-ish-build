@@ -8,20 +8,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
-      - name: Download musl cross-compiler
+      - name: Install aarch64 musl cross-compiler
         run: |
           set -euo pipefail
-          curl -fsSL "https://musl.cc/aarch64-linux-musl-cross.tgz" -o /tmp/musl-cross.tgz
-          tar xzf /tmp/musl-cross.tgz -C /tmp
-          echo "/tmp/aarch64-linux-musl-cross/bin" >> $GITHUB_PATH
-
-      - name: Verify toolchain
-        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-musl g++-aarch64-linux-musl
           aarch64-linux-musl-gcc --version
-          aarch64-linux-musl-g++ --version
 
       - name: Checkout ZeroTier One
         uses: actions/checkout@v4
